@@ -1,9 +1,6 @@
 package com.telefield.onebody.service;
 
-import com.telefield.onebody.dto.GatewayDataDto;
-import com.telefield.onebody.dto.GatewayDetailDto;
-import com.telefield.onebody.dto.GatewayDto;
-import com.telefield.onebody.dto.GatewayRegistrationDto;
+import com.telefield.onebody.dto.*;
 import com.telefield.onebody.entity.*;
 import com.telefield.onebody.exception.DeviceDataException;
 import com.telefield.onebody.exception.DeviceException;
@@ -315,8 +312,11 @@ public class DeviceService {
         }
 
         double operatingRate = (double) operatingGateways / totalGateways * 100.0;
-        String formattedOperatingRate = String.format("%.1f", operatingRate);
-        return formattedOperatingRate;
+        return String.format("%.1f", operatingRate);
+
+    }
+
+    public void requestAs(String macAddress, AsRequestDto asRequest) {
 
     }
 }

@@ -1,9 +1,6 @@
 package com.telefield.onebody.controller;
 
-import com.telefield.onebody.dto.GatewayDataDto;
-import com.telefield.onebody.dto.GatewayDetailDto;
-import com.telefield.onebody.dto.GatewayDto;
-import com.telefield.onebody.dto.GatewayRegistrationDto;
+import com.telefield.onebody.dto.*;
 import com.telefield.onebody.entity.Event;
 import com.telefield.onebody.entity.GatewayCycle;
 import com.telefield.onebody.entity.GatewayData;
@@ -123,5 +120,12 @@ public class DeviceController {
         log.info("remote/{}", macAddress);
         String topic = "remote/" + macAddress;
         sendResponse.sendToMqtt(order, topic);
+    }
+
+    @PostMapping("/gateway/{macAddress}/asRequest")
+    public void asRequest(
+            @PathVariable String macAddress, @RequestBody AsRequestDto asRequest
+    ) {
+        deviceService.requestAs(macAddress, asRequest);
     }
 }
