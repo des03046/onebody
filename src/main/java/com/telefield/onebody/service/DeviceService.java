@@ -12,6 +12,7 @@ import com.telefield.onebody.repository.*;
 import com.telefield.onebody.type.DeviceType;
 import com.telefield.onebody.type.EventType;
 import com.telefield.onebody.type.GatewayStateType;
+import com.telefield.onebody.type.RequestStateType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -317,6 +318,23 @@ public class DeviceService {
     }
 
     public void requestAs(String macAddress, AsRequestDto asRequest) {
+        Gateway gateway = gatewayRepository.findByGwMacAddress(macAddress)
+                .orElseThrow(() -> new DeviceException(NO_DEVICE));
+
+        User user = userRepository.findByUserId(asRequest.getUserId()).orElseThrow(
+                () -> new UserException(NO_USER)
+        );
+
+        AsRequest.builder()
+                .reason(asRequest.getReason())
+                .requestUser(asRequest.getUserId())
+                .phone(gateway.getGwPhone())
+                .macAddress(macAddress)
+                .state(RequestStateType.AS_REQUEST)
+                .userName(user.getUserName())
+                .location(user.getLocation())
+                .build();
+
 
     }
 }
