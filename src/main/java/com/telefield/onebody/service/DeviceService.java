@@ -44,6 +44,7 @@ public class DeviceService {
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
     private final EventRepository eventRepository;
+    private final AsRequestRepository asRequestRepository;
     private final MqttHandler.outboundGateway sendResponse;
 
 
@@ -317,6 +318,7 @@ public class DeviceService {
 
     }
 
+    @Transactional
     public void requestAs(String macAddress, AsRequestDto asRequest) {
         Gateway gateway = gatewayRepository.findByGwMacAddress(macAddress)
                 .orElseThrow(() -> new DeviceException(NO_DEVICE));
@@ -325,7 +327,7 @@ public class DeviceService {
                 () -> new UserException(NO_USER)
         );
 
-        AsRequest.builder()
+        AsRequest request = AsRequest.builder()
                 .reason(asRequest.getReason())
                 .requestUser(asRequest.getUserId())
                 .phone(gateway.getGwPhone())
@@ -335,6 +337,7 @@ public class DeviceService {
                 .location(user.getLocation())
                 .build();
 
-
+        asRequestRepository.save(request);
+        gateway.setPowerState(GatewayStateType.AS_REQUEST);
     }
 }
