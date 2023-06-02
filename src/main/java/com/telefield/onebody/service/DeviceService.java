@@ -333,11 +333,16 @@ public class DeviceService {
                 .phone(gateway.getGwPhone())
                 .macAddress(macAddress)
                 .state(RequestStateType.AS_REQUEST)
+                .managerId(gateway.getManagerId())
                 .userName(user.getUserName())
                 .location(user.getLocation())
                 .build();
 
         asRequestRepository.save(request);
         gateway.setPowerState(GatewayStateType.AS_REQUEST);
+    }
+
+    public List<AsRequest> getAsRequestList(String userId) {
+        return asRequestRepository.findByManagerIdOrderByRegDate(userId);
     }
 }

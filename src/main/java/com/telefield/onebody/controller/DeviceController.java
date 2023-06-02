@@ -1,6 +1,7 @@
 package com.telefield.onebody.controller;
 
 import com.telefield.onebody.dto.*;
+import com.telefield.onebody.entity.AsRequest;
 import com.telefield.onebody.entity.Event;
 import com.telefield.onebody.entity.GatewayCycle;
 import com.telefield.onebody.entity.GatewayData;
@@ -8,6 +9,8 @@ import com.telefield.onebody.mqtt.MqttHandler;
 import com.telefield.onebody.service.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -101,7 +104,9 @@ public class DeviceController {
     }
 
     @GetMapping("/gateway/{macAddress}/cycles")
-    public List<GatewayCycle> getGatewayCycleList(@PathVariable String macAddress) {
+    public List<GatewayCycle> getGatewayCycleList(
+            @PathVariable String macAddress
+    ) {
         log.info("GET /gateway/{}/cycles", macAddress);
 
         return deviceService.getGatewayCycleList(macAddress);
@@ -115,7 +120,8 @@ public class DeviceController {
 
     @PostMapping("/remote/{macAddress}")
     public void remoteTest(
-            @PathVariable String macAddress, @RequestParam String order
+            @PathVariable String macAddress,
+            @RequestParam String order
     ) {
         log.info("remote/{}", macAddress);
         String topic = "remote/" + macAddress;
@@ -123,9 +129,18 @@ public class DeviceController {
     }
 
     @PostMapping("/gateway/{macAddress}/asRequest")
-    public void asRequest(
-            @PathVariable String macAddress, @RequestBody AsRequestDto asRequest
+    public ResponseEntity<?> asRequest(
+            @PathVariable String macAddress,
+            @RequestBody AsRequestDto asRequest
     ) {
         deviceService.requestAs(macAddress, asRequest);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/gateway/asRequest/list/{userId}")
+    public List<AsRequest> getAsRequestList(
+            @PathVariable String userId
+    ) {
+        return deviceService.getAsRequestList(userId);
     }
 }

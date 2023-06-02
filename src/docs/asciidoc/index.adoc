@@ -107,13 +107,28 @@ include::{snippets}/gateway/{macAddress}/event/list/response-body.adoc[]
 
 include::{snippets}/user/{userId}/event/list/http-request.adoc[]
 
-==== 1.52 http 응답 예제
+==== 1.5.2 http 응답 예제
 
 include::{snippets}/user/{userId}/event/list/http-response.adoc[]
 
 ==== 1.5.3 응답 바디 예제
 
 include::{snippets}/user/{userId}/event/list/response-body.adoc[]
+
+[[Gateway-AS-요청]]
+=== 1.6 Gateway As 요청
+
+==== 1.6.1 http 요청 예제
+
+include::{snippets}/gateway/{macAddress}/asRequest/http-request.adoc[]
+
+==== 1.6.2 http 응답 예제
+
+include::{snippets}/gateway/{macAddress}/asRequest/http-response.adoc[]
+
+==== 1.6.3 요청 바디 예제
+
+include::{snippets}/gateway/{macAddress}/asRequest/request-body.adoc[]
 
 == 2. User API
 

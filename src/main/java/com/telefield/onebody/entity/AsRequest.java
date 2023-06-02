@@ -29,6 +29,8 @@ public class AsRequest {
 
     private RequestStateType state;
 
+    private String managerId;
+
     private String reason;
 
     @CreationTimestamp

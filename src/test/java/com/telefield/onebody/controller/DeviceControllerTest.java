@@ -1,12 +1,13 @@
 package com.telefield.onebody.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.telefield.onebody.dto.AsRequestDto;
 import com.telefield.onebody.entity.*;
 import com.telefield.onebody.repository.*;
 import com.telefield.onebody.service.DeviceService;
 import com.telefield.onebody.type.DeviceType;
 import com.telefield.onebody.type.EventType;
 import com.telefield.onebody.type.GatewayStateType;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,8 +26,7 @@ import java.time.LocalDateTime;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -151,10 +151,11 @@ class DeviceControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
-    @Before("findAllGateway")
     void RegistrationGateway() throws Exception {
-        exampleUserCreate();
         mockMvc.perform(
                         put("/gateway/registration")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -252,5 +253,23 @@ class DeviceControllerTest {
                 ).andDo(print())
                 .andDo(document("gateway/today/event/list"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void createAsRequest() throws Exception {
+        exampleUserCreate();
+
+        String asRequest = objectMapper.writeValueAsString(AsRequestDto.builder()
+                .userId("admin")
+                .reason("테스트입니다.")
+                .build());
+
+        mockMvc.perform(
+                        post("/gateway/{macAddress}/asRequest", "00158D000868B487")
+                                .content(asRequest)
+                                .contentType(MediaType.APPLICATION_JSON)
+                ).andDo(print())
+                .andDo(document("gateway/{macAddress}/asRequest"))
+                .andExpect(status().isCreated());
     }
 }
