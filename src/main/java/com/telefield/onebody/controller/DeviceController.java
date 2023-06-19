@@ -143,4 +143,17 @@ public class DeviceController {
     ) {
         return deviceService.getAsRequestList(userId);
     }
+
+    @PostMapping("/gateway/search/asRequest/{userId}")
+    public List<AsRequest> getAsRequestListBySearch(
+            @PathVariable String userId,
+            @RequestBody AsRequestSearchDto asRequestSearchDto
+    ) {
+        if (asRequestSearchDto == null)
+            return deviceService.getAsRequestList(userId);
+        else {
+            log.info("search Request: " + asRequestSearchDto);
+            return deviceService.getAsRequestListBySearch(asRequestSearchDto);
+        }
+    }
 }

@@ -16,6 +16,8 @@ import com.telefield.onebody.type.RequestStateType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -344,5 +346,49 @@ public class DeviceService {
 
     public List<AsRequest> getAsRequestList(String userId) {
         return asRequestRepository.findByManagerIdOrderByRegDate(userId);
+    }
+
+    public List<AsRequest> getAsRequestListBySearch(AsRequestSearchDto asRequestSearchDto) {
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withIgnoreNullValues();
+
+        AsRequest asRequest = new AsRequest();
+        if (asRequestSearchDto.getCompletedDate() != null)
+            asRequest.setCompletedDate(asRequestSearchDto.getCompletedDate());
+        if (asRequestSearchDto.getState() != null) {
+            switch (asRequestSearchDto.getState()) {
+                case "DEVICE_RECALL":
+                    asRequest.setState(RequestStateType.DEVICE_RECALL);
+                    break;
+
+                case "REPAIRING":
+                    asRequest.setState(RequestStateType.REPAIRING);
+                    break;
+
+                case "AS_COMPLETED":
+                    asRequest.setState(RequestStateType.AS_COMPLETED);
+                    break;
+
+                case "REINSTALL":
+                    asRequest.setState(RequestStateType.REINSTALL);
+                    break;
+                case "AS_REQUEST":
+                default:
+                    asRequest.setState(RequestStateType.AS_REQUEST);
+                    break;
+            }
+        }
+        if (asRequestSearchDto.getPhone() != null)
+            asRequest.setPhone(asRequestSearchDto.getPhone());
+        if (asRequestSearchDto.getMacAddress() != null)
+            asRequest.setMacAddress(asRequestSearchDto.getMacAddress());
+        if (asRequestSearchDto.getUserName() != null)
+            asRequest.setUserName(asRequestSearchDto.getUserName());
+        if (asRequestSearchDto.getRegDate() != null)
+            asRequest.setRegDate(asRequestSearchDto.getRegDate());
+
+        log.info("search form:" + asRequest);
+        Example<AsRequest> example = Example.of(asRequest, matcher);
+        return asRequestRepository.findAll(example);
     }
 }
