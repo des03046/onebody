@@ -348,7 +348,11 @@ public class DeviceService {
         return asRequestRepository.findByManagerIdOrderByRegDate(userId);
     }
 
-    public List<AsRequest> getAsRequestListBySearch(AsRequestSearchDto asRequestSearchDto) {
+    public List<AsRequest> getAsRequestListBySearch(AsRequestSearchDto asRequestSearchDto, String userId) {
+        userRepository.findByUserId(userId).orElseThrow(
+                () -> new UserException(NO_USER)
+        );
+
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withIgnoreNullValues();
 
@@ -360,19 +364,15 @@ public class DeviceService {
                 case "DEVICE_RECALL":
                     asRequest.setState(RequestStateType.DEVICE_RECALL);
                     break;
-
                 case "REPAIRING":
                     asRequest.setState(RequestStateType.REPAIRING);
                     break;
-
                 case "AS_COMPLETED":
                     asRequest.setState(RequestStateType.AS_COMPLETED);
                     break;
-
                 case "REINSTALL":
                     asRequest.setState(RequestStateType.REINSTALL);
                     break;
-                case "AS_REQUEST":
                 default:
                     asRequest.setState(RequestStateType.AS_REQUEST);
                     break;
@@ -390,5 +390,40 @@ public class DeviceService {
         log.info("search form:" + asRequest);
         Example<AsRequest> example = Example.of(asRequest, matcher);
         return asRequestRepository.findAll(example);
+    }
+
+    public List<Gateway> getDeviceListBySearch(DeviceSearchDto deviceSearchDto, String userId) {
+        userRepository.findByUserId(userId).orElseThrow(
+                () -> new UserException(NO_USER)
+        );
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withIgnoreNullValues();
+        Gateway gateway = new Gateway();
+
+        if (deviceSearchDto.getUserName() != null)
+            gateway.setUserName(deviceSearchDto.getUserName());
+        if (deviceSearchDto.getGwMacAddress() != null)
+            gateway.setGwMacAddress(deviceSearchDto.getGwMacAddress());
+        if (deviceSearchDto.getGwPhone() != null)
+            gateway.setGwPhone(deviceSearchDto.getGwPhone());
+        if (deviceSearchDto.getPowerState() != null) {
+            switch (deviceSearchDto.getPowerState()) {
+                case "POWER_OFF":
+                    gateway.setPowerState(GatewayStateType.POWER_OFF);
+                    break;
+                case "NON_RECEIVE":
+                    gateway.setPowerState(GatewayStateType.NON_RECEIVE);
+                    break;
+                case "AS_REQUEST":
+                    gateway.setPowerState(GatewayStateType.AS_REQUEST);
+                    break;
+                default:
+                    gateway.setPowerState(GatewayStateType.NORMAL);
+                    break;
+            }
+        }
+        Example<Gateway> example = Example.of(gateway, matcher);
+        return gatewayRepository.findAll(example);
     }
 }

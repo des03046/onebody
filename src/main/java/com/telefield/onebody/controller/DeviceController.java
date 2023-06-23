@@ -1,10 +1,7 @@
 package com.telefield.onebody.controller;
 
 import com.telefield.onebody.dto.*;
-import com.telefield.onebody.entity.AsRequest;
-import com.telefield.onebody.entity.Event;
-import com.telefield.onebody.entity.GatewayCycle;
-import com.telefield.onebody.entity.GatewayData;
+import com.telefield.onebody.entity.*;
 import com.telefield.onebody.mqtt.MqttHandler;
 import com.telefield.onebody.service.DeviceService;
 import lombok.RequiredArgsConstructor;
@@ -153,7 +150,15 @@ public class DeviceController {
             return deviceService.getAsRequestList(userId);
         else {
             log.info("search Request: " + asRequestSearchDto);
-            return deviceService.getAsRequestListBySearch(asRequestSearchDto);
+            return deviceService.getAsRequestListBySearch(asRequestSearchDto, userId);
         }
+    }
+
+    @PostMapping("/gateway/search/device/{userId}")
+    public List<Gateway> getDeviceListBySearch(
+            @PathVariable String userId,
+            @RequestBody DeviceSearchDto deviceSearchDto
+    ) {
+        return deviceService.getDeviceListBySearch(deviceSearchDto, userId);
     }
 }
